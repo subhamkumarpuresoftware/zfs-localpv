@@ -67,7 +67,7 @@ jobs:
                  docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
                  arm64v8/ubuntu:20.04 \
                  bash -exc 'apt-get update -y && \
-                   apt-get install make wget -y && \
+                   apt-get install make wget gcc -y && \
                    wget https://go.dev/dl/go1.18.4.linux-arm64.tar.gz && \
                    tar -C /usr/local -xzf go1.18.4.linux-arm64.tar.gz && \
                    export PATH=$PATH:/usr/local/go/bin && \
