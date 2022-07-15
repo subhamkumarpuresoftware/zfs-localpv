@@ -55,6 +55,7 @@ jobs:
 
       - name: Upload Coverage Report
         uses: codecov/codecov-action@v1
+        
   unit-test-arm64: 
        runs-on: ubuntu-latest
        steps:
@@ -67,7 +68,7 @@ jobs:
                  docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
                  arm64v8/ubuntu:20.04 \
                  bash -exc 'apt-get update -y && \
-                   apt-get install make -y && \
+                   apt-get install make golang-go -y && \
                    make test'
   bdd-test:
     needs: ['unit-test']
