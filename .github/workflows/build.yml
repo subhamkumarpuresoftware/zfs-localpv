@@ -59,15 +59,21 @@ jobs:
        runs-on: ubuntu-latest
        steps:
         - uses: actions/checkout@v2
-        - name: Build in arm64 container
-          uses: uraimo/run-on-arch-action@v2.1.1
-          with:
-            arch: aarch64
-            distro:  ubuntu20.04
-            run: |
-                  sudo apt-get update -y
-                  sudo apt-get install golang-go make -y
-                  make test
+        - name: Set up QEMU
+          id: qemu
+          uses: docker/setup-qemu-action@v1
+        - name: Unit-test-arm
+          run: |
+                 docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
+                 arm64v8/ubuntu:20.04 \
+                 bash -exc 'apt-get update -y && \
+                   apt-get install make wget -y && \
+                   wget https://go.dev/dl/go1.18.4.linux-arm64.tar.gz && \
+                   tar -C /usr/local -xzf go1.18.4.linux-arm64.tar.gz && \
+                   export PATH=$PATH:/usr/local/go/bin && \
+                   rm -rf go1.18.4.linux-arm64.tar.gz && \
+                   go version && \
+                   make test'
   bdd-test:
     needs: ['unit-test']
     runs-on: ubuntu-latest
