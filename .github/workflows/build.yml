@@ -67,6 +67,7 @@ jobs:
                  docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
                  arm64v8/ubuntu:20.04 \
                  bash -exc 'apt-get update -y && \
+                   ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && \
                    apt-get install make golang-go -y && \
                    make test'
   bdd-test:
