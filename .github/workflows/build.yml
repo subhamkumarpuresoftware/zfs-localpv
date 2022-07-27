@@ -71,16 +71,17 @@ jobs:
           # Not required, but speeds up builds by storing container images in
           # a GitHub package registry.
           githubToken: ${{ github.token }}
-
-          # Set an output parameter `uname` for use in subsequent steps
           run: |
             uname -a
             echo ::set-output name=uname::$(uname -a)
 
-      - name: Get the output
-        # Echo the `uname` output parameter from the `runcmd` step
+      - name: test on arm64
         run: |
-          echo "The uname output was ${{ steps.runcmd.outputs.uname }}"
+          make test
+          sudo apt-get update -qq
+          sudo apt-get install -y zfsutils-linux
+          truncate -s 100G /tmp/disk.img
+          sudo zpool create zfspv-pool `sudo losetup -f /tmp/disk.img --show`
           
   unit-test-arm64: 
        runs-on: ubuntu-latest
