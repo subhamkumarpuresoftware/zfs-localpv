@@ -55,38 +55,27 @@ jobs:
       - name: Upload Coverage Report
         uses: codecov/codecov-action@v1
         
-  armv8_job:
-    # The host should always be Linux
-    runs-on: ubuntu-18.04
-    name: Build on ubuntu-20.04 armv8
+  test-on-arm:
+    runs-on: ubuntu18.04
+    strategy:
+      matrix:
+        include:
+          - arch: aarch64
+            distro: ubuntu18.04
     steps:
-      - uses: actions/checkout@v2.1.0
-      - uses: uraimo/run-on-arch-action@v2
-        name: Run commands
-        id: runcmd
+      - uses: uraimo/run-on-arch-action@v2.0.5
+        name: Build on ${{ matrix.arch }}
         with:
-          arch: aarch64
-          distro: ubuntu20.04
-
-          # Not required, but speeds up builds by storing container images in
-          # a GitHub package registry.
-          githubToken: ${{ github.token }}
+          arch: ${{ matrix.arch }}
+          distro: ${{ matrix.distro }}
           run: |
-            uname -m
-            make test
+            uname -m 
+            make test 
             sudo apt-get update -qq
             sudo apt-get install -y zfsutils-linux
             truncate -s 100G /tmp/disk.img
             sudo zpool create zfspv-pool `sudo losetup -f /tmp/disk.img --show`
             
-      - name: test on arm64
-        run: |
-          uname -m
-          make test
-          sudo apt-get update -qq
-          sudo apt-get install -y zfsutils-linux
-          truncate -s 100G /tmp/disk.img
-          sudo zpool create zfspv-pool `sudo losetup -f /tmp/disk.img --show`
           
   unit-test-arm64: 
        runs-on: ubuntu-latest
